@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Time Tracker</string>
+    <string name="task_new_title">New Task</string>
+    <string name="task_name">Name</string>
+    <string name="task_create">Create</string>
+    <string name="task_cancel">Cancel</string>
+    <string name="empty_current">--</string>
+    <string name="menu_timesheet_title">List</string>
+</resources>
