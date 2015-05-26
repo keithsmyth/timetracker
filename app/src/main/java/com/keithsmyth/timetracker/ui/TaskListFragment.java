@@ -19,6 +19,7 @@ import com.keithsmyth.timetracker.adapter.TaskAdapter;
 import com.keithsmyth.timetracker.database.model.Current;
 import com.keithsmyth.timetracker.database.model.Task;
 import com.keithsmyth.timetracker.database.model.Timesheet;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.sqlbrite.SqlBrite;
 
 import org.joda.time.DateTime;
@@ -69,6 +70,8 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
     tasksListView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
     adapter = new TaskAdapter(this);
     tasksListView.setAdapter(adapter);
+    FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.btn_add);
+    fab.attachToRecyclerView(tasksListView);
   }
 
   @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
