@@ -47,11 +47,11 @@ public class TimesheetListFragment extends Fragment {
 
   @Override public void onResume() {
     super.onResume();
-    subscription = App.getDb().createQuery(TimesheetViewModel.TABLES, TimesheetViewModel.QUERY)
-        .map(TimesheetViewModel.MAP)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(adapter);
+//    subscription = App.getDb().createQuery(TimesheetViewModel.TABLES, TimesheetViewModel.QUERY)
+//        .map(TimesheetViewModel.MAP)
+//        .subscribeOn(Schedulers.io())
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .subscribe(adapter);
   }
 
   @Override public void onPause() {

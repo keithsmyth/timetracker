@@ -12,12 +12,10 @@ import com.keithsmyth.timetracker.database.model.Task;
 import java.util.Collections;
 import java.util.List;
 
-import rx.functions.Action1;
-
 /**
  * @author keithsmyth
  */
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> implements Action1<List<Task>> {
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
   private final Listener listener;
   private List<Task> taskList = Collections.emptyList();
@@ -26,7 +24,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     this.listener = listener;
   }
 
-  @Override public void call(List<Task> taskList) {
+  public void init(List<Task> taskList) {
     this.taskList = taskList;
     notifyDataSetChanged();
   }
@@ -55,7 +53,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     public void bind(final Task task, final Listener listener) {
-      nameText.setText(task.name);
+      nameText.setText(task.getName());
       nameText.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
           listener.onTaskClicked(task);

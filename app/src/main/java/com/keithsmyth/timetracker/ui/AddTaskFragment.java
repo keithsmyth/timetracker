@@ -2,7 +2,6 @@ package com.keithsmyth.timetracker.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -12,9 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import com.keithsmyth.timetracker.App;
 import com.keithsmyth.timetracker.R;
 import com.keithsmyth.timetracker.database.model.Task;
+
+import java.util.UUID;
+
+import io.realm.Realm;
 
 /**
  * @author keithsmyth
@@ -38,10 +40,12 @@ public class AddTaskFragment extends DialogFragment {
         .setView(view)
         .setPositiveButton(R.string.task_create, new DialogInterface.OnClickListener() {
           @Override public void onClick(DialogInterface dialog, int which) {
-            final ContentValues values = new Task.Builder()
-                .name(nameEditText.getText().toString())
-                .build();
-            App.getDb().insert(Task.TABLE, values);
+            Realm realm = Realm.getInstance(getActivity());
+            realm.beginTransaction();
+            Task newTask = realm.createObject(Task.class);
+            newTask.setId(UUID.randomUUID().toString());
+            newTask.setName(nameEditText.getText().toString());
+            realm.commitTransaction();
           }
         })
         .setNegativeButton(R.string.task_cancel, null)

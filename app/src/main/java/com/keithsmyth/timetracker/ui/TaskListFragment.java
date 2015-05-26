@@ -13,21 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.keithsmyth.timetracker.App;
 import com.keithsmyth.timetracker.R;
 import com.keithsmyth.timetracker.adapter.TaskAdapter;
+import com.keithsmyth.timetracker.database.Database;
 import com.keithsmyth.timetracker.database.model.Current;
 import com.keithsmyth.timetracker.database.model.Task;
 import com.keithsmyth.timetracker.database.model.Timesheet;
 import com.melnykov.fab.FloatingActionButton;
-import com.squareup.sqlbrite.SqlBrite;
 
 import org.joda.time.DateTime;
 
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import java.util.UUID;
+
+import io.realm.Realm;
 
 /**
  * @author keithsmyth
@@ -35,10 +33,9 @@ import rx.schedulers.Schedulers;
 public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
 
   private TaskAdapter adapter;
-  private Subscription currentSubscription;
-  private Subscription taskSubscription;
   private Listener listener;
   private TextView currentTextView;
+  private Current current;
 
   public static TaskListFragment newInstance() {
     return new TaskListFragment();
@@ -97,29 +94,9 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
 
   @Override public void onResume() {
     super.onResume();
-    currentSubscription = App.getDb().createQuery(Current.TABLE, Current.QUERY)
-        .map(Current.MAP)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Action1<Current>() {
-          @Override public void call(Current current) {
-            populateCurrent(current);
-          }
-        });
-    taskSubscription = App.getDb().createQuery(Task.TABLE, Task.QUERY)
-        .map(Task.MAP)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(adapter);
+    populateCurrent(Database.current());
+    adapter.init(Database.tasks());
   }
-
-  @Override public void onPause() {
-    super.onPause();
-    currentSubscription.unsubscribe();
-    taskSubscription.unsubscribe();
-  }
-
-  private Current current;
 
   private void populateCurrent(Current current) {
     this.current = current;
@@ -128,41 +105,35 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
   }
 
   @Override public void onTaskClicked(Task task) {
-    SqlBrite db = App.getDb();
+    Realm realm = Realm.getInstance(getActivity());
     try {
-      db.beginTransaction();
+      realm.beginTransaction();
       if (current != null) {
         // stop current
-        db.delete(Current.TABLE, null);
+        realm.allObjects(Current.class).clear();
         // add timesheet
-        db.insert(Timesheet.TABLE,
-            new Timesheet.Builder()
-                .taskId(current.taskId)
-                .startTime(current.startTime)
-                .stopTime(DateTime.now())
-                .build());
+        Timesheet newTimesheet = realm.createObject(Timesheet.class);
+        newTimesheet.setId(UUID.randomUUID().toString());
+        newTimesheet.setTaskId(current.getTaskId());
+        newTimesheet.setStartTime(current.getStartTime());
+        newTimesheet.setStopTime(DateTime.now().toDate());
 
-        if (current.taskId == task.id) {
-          // don't start any new items
-          db.setTransactionSuccessful();
-          return;
+        if (!current.getTaskId().equals(task.getId())) {
+          // start new current
+          Current newCurrent = realm.createObject(Current.class);
+          newCurrent.setId(UUID.randomUUID().toString());
+          newCurrent.setTaskId(task.getId());
+          newCurrent.setStartTime(DateTime.now().toDate());
         }
       }
-
-      // start new
-      db.insert(Current.TABLE,
-          new Current.Builder()
-              .taskId(task.id)
-              .startTime(DateTime.now())
-              .build());
-      db.setTransactionSuccessful();
     } finally {
-      db.endTransaction();
+      realm.commitTransaction();
     }
   }
 
   public static interface Listener {
     void onOpenAddTaskFragment();
+
     void onOpenTimesheetListFragment();
   }
 }
