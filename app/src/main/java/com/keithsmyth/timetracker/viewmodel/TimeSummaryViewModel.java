@@ -10,19 +10,19 @@ import java.util.List;
  */
 public class TimeSummaryViewModel {
 
-  public int taskId;
+  public String taskId;
   public String taskName;
 
   private final List<TimesheetViewModel> timesheetViewModelList;
 
-  public TimeSummaryViewModel(int taskId, String taskName) {
+  public TimeSummaryViewModel(String taskId, String taskName) {
     this.taskId = taskId;
     this.taskName = taskName;
     timesheetViewModelList = new ArrayList<>();
   }
 
   public void add(TimesheetViewModel timesheetViewModel) {
-    if (timesheetViewModel.taskId != taskId) {
+    if (!timesheetViewModel.taskId.equals(taskId)) {
       throw new IllegalArgumentException("Summary must be of same task");
     }
     timesheetViewModelList.add(timesheetViewModel);

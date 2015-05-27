@@ -7,8 +7,8 @@ import org.joda.time.DateTime;
  */
 public class TimesheetViewModel {
 
-  public int timesheetId;
-  public int taskId;
+  public String timesheetId;
+  public String taskId;
   public String taskName;
   public DateTime startTime;
   public DateTime stopTime;

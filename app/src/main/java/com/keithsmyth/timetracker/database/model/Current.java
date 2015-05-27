@@ -11,8 +11,7 @@ import io.realm.annotations.PrimaryKey;
 public class Current extends RealmObject {
 
   @PrimaryKey private String id;
-  private String taskId;
-  private String taskName;
+  private Task task;
   private Date startTime;
 
   public String getId() {
@@ -23,20 +22,12 @@ public class Current extends RealmObject {
     this.id = id;
   }
 
-  public String getTaskId() {
-    return taskId;
+  public Task getTask() {
+    return task;
   }
 
-  public void setTaskId(String taskId) {
-    this.taskId = taskId;
-  }
-
-  public String getTaskName() {
-    return this.taskName;
-  }
-
-  public void setTaskName(String taskName) {
-    this.taskName = taskName;
+  public void setTask(Task task) {
+    this.task = task;
   }
 
   public Date getStartTime() {

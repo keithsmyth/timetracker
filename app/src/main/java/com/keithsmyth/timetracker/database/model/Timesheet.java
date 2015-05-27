@@ -11,7 +11,7 @@ import io.realm.annotations.PrimaryKey;
 public class Timesheet extends RealmObject {
 
   @PrimaryKey private String id;
-  private String taskId;
+  private Task task;
   private Date startTime;
   private Date stopTime;
 
@@ -23,12 +23,12 @@ public class Timesheet extends RealmObject {
     this.id = id;
   }
 
-  public String getTaskId() {
-    return taskId;
+  public Task getTask() {
+    return task;
   }
 
-  public void setTaskId(String taskId) {
-    this.taskId = taskId;
+  public void setTask(Task task) {
+    this.task = task;
   }
 
   public Date getStartTime() {

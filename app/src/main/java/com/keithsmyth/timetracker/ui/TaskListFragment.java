@@ -107,7 +107,7 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
 
   private String formatCurrent(Current current) {
     return String.format("%1$s from: %2$s",
-        current.getTaskName(),
+        current.getTask().getName(),
         current.getStartTime().toString());
   }
 
@@ -119,12 +119,12 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
           // add timesheet
           Timesheet newTimesheet = realm.createObject(Timesheet.class);
           newTimesheet.setId(UUID.randomUUID().toString());
-          newTimesheet.setTaskId(current.getTaskId());
+          newTimesheet.setTask(current.getTask());
           newTimesheet.setStartTime(current.getStartTime());
           newTimesheet.setStopTime(DateTime.now().toDate());
 
           // stop current
-          String currentTaskId = current.getTaskId();
+          String currentTaskId = current.getTask().getId();
           realm.allObjects(Current.class).clear();
 
           if (currentTaskId.equals(task.getId())) {
@@ -136,7 +136,7 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
         // start new current
         Current newCurrent = realm.createObject(Current.class);
         newCurrent.setId(UUID.randomUUID().toString());
-        newCurrent.setTaskId(task.getId());
+        newCurrent.setTask(task);
         newCurrent.setStartTime(DateTime.now().toDate());
       }
     });
