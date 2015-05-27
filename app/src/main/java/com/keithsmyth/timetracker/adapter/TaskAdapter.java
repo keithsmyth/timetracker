@@ -62,7 +62,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
   }
 
-  public static interface Listener {
+  public interface Listener {
     void onTaskClicked(Task task);
   }
 }

@@ -143,7 +143,7 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
     populateCurrent();
   }
 
-  public static interface Listener {
+  public interface Listener {
     void onOpenAddTaskFragment();
 
     void onOpenTimesheetListFragment();
