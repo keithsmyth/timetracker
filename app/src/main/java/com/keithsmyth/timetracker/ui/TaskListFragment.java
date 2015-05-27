@@ -94,41 +94,53 @@ public class TaskListFragment extends Fragment implements TaskAdapter.Listener {
 
   @Override public void onResume() {
     super.onResume();
-    populateCurrent(Database.current());
+    populateCurrent();
     adapter.init(Database.tasks());
   }
 
-  private void populateCurrent(Current current) {
-    this.current = current;
-    currentTextView.setText(current != null ? current.toString()
+  private void populateCurrent() {
+    this.current = Database.current();
+    currentTextView.setText(current != null ?
+        formatCurrent(current)
         : getString(R.string.empty_current));
   }
 
-  @Override public void onTaskClicked(Task task) {
-    Realm realm = Realm.getInstance(getActivity());
-    try {
-      realm.beginTransaction();
-      if (current != null) {
-        // stop current
-        realm.allObjects(Current.class).clear();
-        // add timesheet
-        Timesheet newTimesheet = realm.createObject(Timesheet.class);
-        newTimesheet.setId(UUID.randomUUID().toString());
-        newTimesheet.setTaskId(current.getTaskId());
-        newTimesheet.setStartTime(current.getStartTime());
-        newTimesheet.setStopTime(DateTime.now().toDate());
+  private String formatCurrent(Current current) {
+    return String.format("%1$s from: %2$s",
+        current.getTaskName(),
+        current.getStartTime().toString());
+  }
 
-        if (!current.getTaskId().equals(task.getId())) {
-          // start new current
-          Current newCurrent = realm.createObject(Current.class);
-          newCurrent.setId(UUID.randomUUID().toString());
-          newCurrent.setTaskId(task.getId());
-          newCurrent.setStartTime(DateTime.now().toDate());
+  @Override public void onTaskClicked(final Task task) {
+    Realm realm = Realm.getInstance(getActivity());
+    realm.executeTransaction(new Realm.Transaction() {
+      @Override public void execute(Realm realm) {
+        if (current != null) {
+          // add timesheet
+          Timesheet newTimesheet = realm.createObject(Timesheet.class);
+          newTimesheet.setId(UUID.randomUUID().toString());
+          newTimesheet.setTaskId(current.getTaskId());
+          newTimesheet.setStartTime(current.getStartTime());
+          newTimesheet.setStopTime(DateTime.now().toDate());
+
+          // stop current
+          String currentTaskId = current.getTaskId();
+          realm.allObjects(Current.class).clear();
+
+          if (currentTaskId.equals(task.getId())) {
+            // only turning off old value
+            return;
+          }
         }
+
+        // start new current
+        Current newCurrent = realm.createObject(Current.class);
+        newCurrent.setId(UUID.randomUUID().toString());
+        newCurrent.setTaskId(task.getId());
+        newCurrent.setStartTime(DateTime.now().toDate());
       }
-    } finally {
-      realm.commitTransaction();
-    }
+    });
+    populateCurrent();
   }
 
   public static interface Listener {

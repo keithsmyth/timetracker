@@ -15,10 +15,6 @@ public class Current extends RealmObject {
   private String taskName;
   private Date startTime;
 
-//  @Override public String toString() {
-//    return String.format("%1$s from: %2$s", taskName, startTime.toString("HH:mm yyyy/MM/dd"));
-//  }
-
   public String getId() {
     return id;
   }
