@@ -17,12 +17,11 @@ import rx.functions.Action1;
 /**
  * @author keithsmyth
  */
-public class TimesheetAdapter extends RecyclerView.Adapter<TimesheetAdapter.TimesheetViewHolder>
-    implements Action1<List<TimesheetViewModel>> {
+public class TimesheetAdapter extends RecyclerView.Adapter<TimesheetAdapter.TimesheetViewHolder> {
 
   private List<TimesheetViewModel> timesheetViewModelList = Collections.emptyList();
 
-  @Override public void call(List<TimesheetViewModel> timesheetViewModelList) {
+  public void init(List<TimesheetViewModel> timesheetViewModelList) {
     this.timesheetViewModelList = timesheetViewModelList;
     notifyDataSetChanged();
   }

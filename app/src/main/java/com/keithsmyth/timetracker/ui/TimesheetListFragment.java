@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.keithsmyth.timetracker.App;
 import com.keithsmyth.timetracker.R;
 import com.keithsmyth.timetracker.adapter.TimesheetAdapter;
+import com.keithsmyth.timetracker.database.Database;
 import com.keithsmyth.timetracker.viewmodel.TimesheetViewModel;
 
 import rx.Subscription;
@@ -24,7 +25,6 @@ import rx.schedulers.Schedulers;
 public class TimesheetListFragment extends Fragment {
 
   private TimesheetAdapter adapter;
-  private Subscription subscription;
 
   public static TimesheetListFragment newInstance() {
     return new TimesheetListFragment();
@@ -47,15 +47,6 @@ public class TimesheetListFragment extends Fragment {
 
   @Override public void onResume() {
     super.onResume();
-//    subscription = App.getDb().createQuery(TimesheetViewModel.TABLES, TimesheetViewModel.QUERY)
-//        .map(TimesheetViewModel.MAP)
-//        .subscribeOn(Schedulers.io())
-//        .observeOn(AndroidSchedulers.mainThread())
-//        .subscribe(adapter);
-  }
-
-  @Override public void onPause() {
-    super.onPause();
-    subscription.unsubscribe();
+    adapter.init(Database.timesheets());
   }
 }
